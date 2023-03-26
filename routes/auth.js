@@ -70,7 +70,7 @@ router.get('/callback', async (req, res) => {
 		// Redirect user
 		const url =
 			process.env.NODE_ENV === 'production'
-				? 'https://vibecheck.onrender.com/compare'
+				? 'https://vibecheck-8lua.onrender.com/compare'
 				: 'http://localhost:3000/compare';
 
 		const urlObj = new URL(url);
@@ -95,7 +95,7 @@ router.get('/callback', async (req, res) => {
 	} catch (err) {
 		const url =
 			process.env.NODE_ENV === 'production'
-				? 'https://vibecheck.onrender.com'
+				? 'https://vibecheck-8lua.onrender.com'
 				: 'http://localhost:3000';
 
 		res.redirect(url);
