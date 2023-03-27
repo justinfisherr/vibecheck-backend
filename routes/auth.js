@@ -13,27 +13,7 @@ const redirect_url =
 
 const redirect_uri = `${redirect_url}/callback`;
 
-const scopes = [
-	'ugc-image-upload',
-	'user-read-playback-state',
-	'user-modify-playback-state',
-	'user-read-currently-playing',
-	'streaming',
-	'app-remote-control',
-	'user-read-email',
-	'user-read-private',
-	'playlist-read-collaborative',
-	'playlist-modify-public',
-	'playlist-read-private',
-	'playlist-modify-private',
-	'user-library-modify',
-	'user-library-read',
-	'user-top-read',
-	'user-read-playback-position',
-	'user-read-recently-played',
-	'user-follow-read',
-	'user-follow-modify',
-];
+const scopes = ['user-top-read'];
 
 const spotifyApi = SpotifyObject.getSpotifyObject({
 	redirectUri: redirect_uri,
@@ -84,14 +64,14 @@ router.get('/callback', async (req, res) => {
 		res.redirect(urlObj.toString());
 
 		// Refresh
-		setInterval(async () => {
-			const data = await spotifyApi.refreshAccessToken();
-			const access_token = data.body['access_token'];
+		// setInterval(async () => {
+		// 	const data = await spotifyApi.refreshAccessToken();
+		// 	const access_token = data.body['access_token'];
 
-			console.log('The access token has been refreshed!');
-			console.log('access_token:', access_token);
-			spotifyApi.setAccessToken(access_token);
-		}, (expires_in / 2) * 1000);
+		// 	console.log('The access token has been refreshed!');
+		// 	console.log('access_token:', access_token);
+		// 	spotifyApi.setAccessToken(access_token);
+		// }, (expires_in / 2) * 1000);
 	} catch (err) {
 		const url =
 			process.env.NODE_ENV === 'production'
