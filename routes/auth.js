@@ -11,6 +11,11 @@ const redirect_url =
     ? "https://vibecheck-backend.onrender.com"
     : "http://localhost:5000";
 
+const home_url =
+  process.env.NODE_ENV === "production"
+    ? "https://thevibecheck.io"
+    : "http://localhost:3000";
+
 const redirect_uri = `${redirect_url}/callback`;
 
 const scopes = ["user-top-read"];
@@ -22,7 +27,7 @@ const spotifyApi = SpotifyObject.getSpotifyObject({
 });
 
 router.get("/login", (req, res) => {
-  res.redirect(spotifyApi.createAuthorizeURL(scopes, "authorizing", true));
+  res.redirect(spotifyApi.createAuthorizeURL(scopes, "", true));
 });
 
 router.get("/callback", async (req, res) => {
@@ -31,7 +36,7 @@ router.get("/callback", async (req, res) => {
 
   if (error) {
     console.error("Callback Error:", error);
-    res.send(`Callback Error: ${error}`);
+    res.redirect(home_url);
     return;
   }
 
@@ -73,23 +78,9 @@ router.get("/callback", async (req, res) => {
     // 	spotifyApi.setAccessToken(access_token);
     // }, (expires_in / 2) * 1000);
   } catch (err) {
-    const url =
-      process.env.NODE_ENV === "production"
-        ? "https://thevibecheck.io"
-        : "http://localhost:3000";
-
-    res.redirect(url);
     console.error("Error getting Tokens:", error);
     res.send({ message: `Error getting Tokens: ${error}`, success: false });
+    res.redirect(home_url);
   }
-});
-router.get("/log-out", (req, res) => {
-  const url =
-    process.env.NODE_ENV === "production"
-      ? "https://thevibecheck.io"
-      : "http://localhost:3000";
-  res.clearCookie("token");
-  res.clearCookie("refresh");
-  res.redirect(url);
 });
 module.exports = router;
