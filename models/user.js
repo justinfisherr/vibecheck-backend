@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Counter = require("../models/counter");
 
 const userSchema = new mongoose.Schema({
   user_info: {
@@ -28,6 +29,20 @@ const userSchema = new mongoose.Schema({
     top_genres: { type: Map, of: Object },
     total_genres: Number,
   },
+});
+
+userSchema.pre("save", async function (next) {
+  if (this.user_info.user_id.length > 15) {
+    const { count } = await Counter.findOneAndUpdate(
+      {},
+      { $inc: { count: 1 } }
+    );
+    const vibeId = "v" + count.toString().padStart(7, 0);
+    this.user_info.vibe_id = vibeId;
+  } else {
+    this.user_info.vibe_id = this.user_info.user_id;
+  }
+  next();
 });
 
 module.exports = mongoose.model("User", userSchema);
