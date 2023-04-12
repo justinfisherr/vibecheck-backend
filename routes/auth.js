@@ -9,7 +9,7 @@ const client_secret = process.env.CLIENT_SECRET;
 
 const redirect_url =
   process.env.NODE_ENV === "production"
-    ? "https://vibecheck-backend.onrender.com"
+    ? "https://vibecheck-backend-production.up.railway.app"
     : "http://localhost:5000";
 
 const home_url =
