@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const SpotifyObject = require("../objects/SpotifyObject");
 const addUser = require("../helpers/addUser");
+const SpotifyWebApi = require("spotify-web-api-node");
 
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
@@ -20,14 +21,16 @@ const redirect_uri = `${redirect_url}/callback`;
 
 const scopes = ["user-top-read"];
 
-const spotifyApi = SpotifyObject.getSpotifyObject({
+const Global_Spotify_Api = SpotifyObject.getSpotifyObject({
   redirectUri: redirect_uri,
   clientId: client_id,
   clientSecret: client_secret,
 });
 
 router.get("/login", (req, res) => {
-  res.redirect(spotifyApi.createAuthorizeURL(scopes, "authorizing", true));
+  res.redirect(
+    Global_Spotify_Api.createAuthorizeURL(scopes, "authorizing", true)
+  );
 });
 
 router.get("/callback", async (req, res) => {
@@ -41,6 +44,11 @@ router.get("/callback", async (req, res) => {
   }
 
   try {
+    const spotifyApi = new SpotifyWebApi({
+      redirectUri: redirect_uri,
+      clientId: client_id,
+      clientSecret: client_secret,
+    });
     const data = await spotifyApi.authorizationCodeGrant(code);
 
     const access_token = data.body["access_token"];
@@ -50,7 +58,7 @@ router.get("/callback", async (req, res) => {
     spotifyApi.setAccessToken(access_token);
     spotifyApi.setRefreshToken(refresh_token);
     //Adds user to database
-    const { username, profile_img, vibe_id } = await addUser();
+    const { username, profile_img, vibe_id } = await addUser(spotifyApi);
 
     // Redirect user
     const url =
@@ -67,16 +75,6 @@ router.get("/callback", async (req, res) => {
       profile_img: profile_img,
     });
     res.redirect(urlObj.toString());
-
-    // Refresh
-    // setInterval(async () => {
-    // 	const data = await spotifyApi.refreshAccessToken();
-    // 	const access_token = data.body['access_token'];
-
-    // 	console.log('The access token has been refreshed!');
-    // 	console.log('access_token:', access_token);
-    // 	spotifyApi.setAccessToken(access_token);
-    // }, (expires_in / 2) * 1000);
   } catch (err) {
     console.error("Error getting Tokens:", error);
     res.send({ message: `Error getting Tokens: ${error}`, success: false });

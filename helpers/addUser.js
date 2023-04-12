@@ -3,10 +3,10 @@
 const User = require("../models/user");
 const spotifyParse = require("../parsers/spotifyParse");
 
-async function addUser() {
+async function addUser(spotifyApi) {
   try {
     //Parse the data first
-    const parsedData = await spotifyParse();
+    const parsedData = await spotifyParse(spotifyApi);
     const userId = parsedData.user_info.user_id;
     const foundProfile = await User.findOne({
       "user_info.user_id": userId,

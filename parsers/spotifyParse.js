@@ -1,5 +1,3 @@
-const SpotifyObject = require("../objects/SpotifyObject");
-
 function getGenres(genreArrays, parsedUser) {
   let incrementedGenres = new Map();
   let totalGenres = 0;
@@ -79,8 +77,7 @@ async function getTopArtists(spotifyApi, parsedUser, allGenres) {
   parsedUser.user_data.top_artists = filteredArtists;
 }
 
-async function spotifyParse() {
-  const spotifyApi = SpotifyObject.getSpotifyObject();
+async function spotifyParse(spotifyApi) {
   let parsedUser = {
     user_info: {},
     user_data: {},
