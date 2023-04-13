@@ -27,7 +27,7 @@ async function addUser(spotifyApi) {
     }
     return parsedData.user_info;
   } catch (error) {
-    console.log(error, "Found in addUser");
+    throw new Error(`Could not add user: ${error}`);
   }
 }
 

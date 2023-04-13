@@ -37,7 +37,7 @@ userSchema.pre("save", async function (next) {
       {},
       { $inc: { count: 1 } }
     );
-    const vibeId = "v" + count.toString().padStart(7, 0);
+    const vibeId = "v" + count.toString().padEnd(7, 0);
     this.user_info.vibe_id = vibeId;
   } else {
     this.user_info.vibe_id = this.user_info.user_id;

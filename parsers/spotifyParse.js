@@ -90,8 +90,7 @@ async function spotifyParse(spotifyApi) {
     await getTopArtists(spotifyApi, parsedUser, allGenres);
     getGenres(allGenres, parsedUser);
   } catch (error) {
-    console.log("Error Parsing through Spotify Object: ", error);
-    throw new Error("Error Parsing through Spotify Object");
+    throw new Error(`In Spotify Parse: ${error}`);
   }
   return parsedUser;
 }

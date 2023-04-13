@@ -76,9 +76,11 @@ router.get("/callback", async (req, res) => {
     });
     res.redirect(urlObj.toString());
   } catch (err) {
-    console.error("Error getting Tokens:", error);
-    res.send({ message: `Error getting Tokens: ${error}`, success: false });
-    res.redirect(home_url);
+    console.error("Error getting Tokens:", err);
+    res.send({
+      message: `You must be a Spotify Premium User.`,
+      success: false,
+    });
   }
 });
 module.exports = router;
