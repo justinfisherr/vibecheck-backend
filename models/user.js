@@ -31,18 +31,23 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+async function createVibeID() {
+  const { count } = await Counter.findOneAndUpdate({}, { $inc: { count: 1 } });
+  return (vibeId = "v" + count.toString());
+}
+
 userSchema.pre("save", async function (next) {
-  if (this.user_info.user_id.length > 15) {
-    const { count } = await Counter.findOneAndUpdate(
-      {},
-      { $inc: { count: 1 } }
-    );
-    const vibeId = "v" + count.toString().padStart(7, 0);
-    this.user_info.vibe_id = vibeId;
-  } else {
-    this.user_info.vibe_id = this.user_info.user_id;
+  if (this.user_info.vibe_id == undefined) {
+    if (this.user_info.user_id.length > 15) {
+      this.user_info.vibe_id = await createVibeID();
+    } else {
+      this.user_info.vibe_id = this.user_info.user_id;
+    }
   }
   next();
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = {
+  User: mongoose.model("User", userSchema),
+  createVibeID: createVibeID,
+};
