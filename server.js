@@ -11,10 +11,6 @@ const authRouter = require("./routes/auth");
 const compareRouter = require("./routes/compare");
 const usersRouter = require("./routes/getUsers");
 
-const authRouter = require("./routes/auth");
-const compareRouter = require("./routes/compare");
-const usersRouter = require("./routes/getUsers");
-
 app
   .use(express.json())
   .use(cors())
