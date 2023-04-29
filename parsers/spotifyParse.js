@@ -1,4 +1,5 @@
 const SpotifyObject = require("../objects/SpotifyObject");
+const ParseError = require("../errors/errors");
 
 function getGenres(genreArrays, parsedUser) {
   let incrementedGenres = new Map();
@@ -94,7 +95,7 @@ async function spotifyParse() {
     getGenres(allGenres, parsedUser);
   } catch (error) {
     console.log("Error Parsing through Spotify Object: ", error);
-    throw new Error("Error Parsing through Spotify Object");
+    throw new ParseError(error);
   }
   return parsedUser;
 }

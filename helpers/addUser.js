@@ -31,9 +31,11 @@ async function addUser() {
       await user.save();
       parsedData.user_info.vibe_id = user.user_info.vibe_id;
     }
+
     return parsedData.user_info;
   } catch (error) {
     console.log(error, "Found in addUser");
+    throw error;
   }
 }
 
