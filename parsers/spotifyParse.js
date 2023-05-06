@@ -18,6 +18,7 @@ function genreIncrementer(genre, userMap) {
   if (!userMap.has(genre)) userMap.set(genre, { val: 1 });
   else userMap.get(genre).val++;
 }
+
 async function getUserInfo(spotifyApi, parsedUser) {
   const userInfo = await spotifyApi.getMe();
   parsedUser.user_info.user_id = userInfo.body.id;
@@ -29,14 +30,32 @@ async function getUserInfo(spotifyApi, parsedUser) {
   }
 }
 
-async function getTopSongs(spotifyApi, parsedUser, allGenres) {
-  let spotifyArtistIDs = "";
+async function getTopSongsNoDupes(spotifyApi) {
+  const shortTerm = await spotifyApi.getMyTopTracks({
+    limit: 50,
+    time_range: "short_term",
+  });
 
-  const topSongs = await spotifyApi.getMyTopTracks({ limit: 50 });
-  let filteredSongs = topSongs.body.items.map((song) => {
+  const longTerm = await spotifyApi.getMyTopTracks({
+    limit: 50,
+    time_range: "long_term",
+  });
+  let result = shortTerm.body.items;
+  result.push(...longTerm.body.items);
+
+  let addedSongs = new Set();
+  return result.filter((song) => {
+    const isDuplicate = addedSongs.has(song.name);
+    if (!isDuplicate) addedSongs.add(song.name);
+    return !isDuplicate;
+  });
+}
+
+async function parseTopSongs(spotifyApi, parsedUser, allGenres) {
+  const topSongs = await getTopSongsNoDupes(spotifyApi);
+
+  let filteredSongs = topSongs.map((song) => {
     let filteredSong = {};
-    spotifyArtistIDs += `${song.artists[0].id},`;
-
     filteredSong.song_name = song.name;
     filteredSong.artist_name = song.artists[0].name;
     filteredSong.url = song.external_urls.spotify;
@@ -49,21 +68,33 @@ async function getTopSongs(spotifyApi, parsedUser, allGenres) {
     }
     return filteredSong;
   });
-  spotifyArtistIDs = spotifyArtistIDs.slice(0, -1);
-
-  const songArtists = await spotifyApi.getArtists([spotifyArtistIDs]);
-
-  filteredSongs.map((song, index) => {
-    song.genres = songArtists.body.artists[index].genres;
-    allGenres.push(songArtists.body.artists[index].genres);
-  });
 
   parsedUser.user_data.top_songs = filteredSongs;
 }
 
-async function getTopArtists(spotifyApi, parsedUser, allGenres) {
-  const topArtists = await spotifyApi.getMyTopArtists({ limit: 50 });
-  const filteredArtists = topArtists.body.items.map((artist) => {
+async function getTopArtistsNoDupes(spotifyApi) {
+  const shortTerm = await spotifyApi.getMyTopArtists({
+    limit: 50,
+    time_range: "short_term",
+  });
+
+  const longTerm = await spotifyApi.getMyTopArtists({
+    limit: 50,
+    time_range: "long_term",
+  });
+  let result = shortTerm.body.items;
+  result.push(...longTerm.body.items);
+
+  let addedArtists = new Set();
+  return result.filter((artist) => {
+    const isDuplicate = addedArtists.has(artist.name);
+    if (!isDuplicate) addedArtists.add(artist.name);
+    return !isDuplicate;
+  });
+}
+async function parseTopArtist(spotifyApi, parsedUser, allGenres) {
+  const topArtists = await getTopArtistsNoDupes(spotifyApi);
+  const filteredArtists = topArtists.map((artist) => {
     const filteredArtist = {};
     filteredArtist.artist_name = artist.name;
 
@@ -90,8 +121,8 @@ async function spotifyParse() {
 
   try {
     await getUserInfo(spotifyApi, parsedUser);
-    await getTopSongs(spotifyApi, parsedUser, allGenres);
-    await getTopArtists(spotifyApi, parsedUser, allGenres);
+    await parseTopSongs(spotifyApi, parsedUser, allGenres);
+    await parseTopArtist(spotifyApi, parsedUser, allGenres);
     getGenres(allGenres, parsedUser);
   } catch (error) {
     console.log("Error Parsing through Spotify Object: ", error);
