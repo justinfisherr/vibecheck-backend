@@ -1,7 +1,13 @@
+/*
+  Two routes that handle all Spotify Authorization requests and responds
+  with a working Spotify API object. 
+*/
+
 const express = require("express");
 const router = express.Router();
 const SpotifyObject = require("../objects/SpotifyObject");
 const addUser = require("../helpers/addUser");
+const SpotifyWebApi = require("spotify-web-api-node");
 
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
@@ -20,15 +26,29 @@ const redirect_uri = `${redirect_url}/callback`;
 
 const scopes = ["user-top-read"];
 
-const spotifyApi = SpotifyObject.getSpotifyObject({
+const Global_Spotify_Api = SpotifyObject.getSpotifyObject({
   redirectUri: redirect_uri,
   clientId: client_id,
   clientSecret: client_secret,
 });
 
+/** 
+  Endpoint /login
+  Redirects user to Spotify's Authorization page.
+*/
+
 router.get("/login", (req, res) => {
-  res.redirect(spotifyApi.createAuthorizeURL(scopes, "authorizing", true));
+  res.redirect(
+    Global_Spotify_Api.createAuthorizeURL(scopes, "authorizing", true)
+  );
 });
+
+/** 
+  Endpoint /callback
+  After authorizing, this endpoint is hit automatically from Spotify.
+  If successful, The Spotify API is now accessible. 
+  If not, the end-user is redirected to the home page. 
+*/
 
 router.get("/callback", async (req, res) => {
   const error = req.query.error;
@@ -41,6 +61,11 @@ router.get("/callback", async (req, res) => {
   }
 
   try {
+    const spotifyApi = new SpotifyWebApi({
+      redirectUri: redirect_uri,
+      clientId: client_id,
+      clientSecret: client_secret,
+    });
     const data = await spotifyApi.authorizationCodeGrant(code);
 
     const access_token = data.body["access_token"];
@@ -50,7 +75,8 @@ router.get("/callback", async (req, res) => {
     spotifyApi.setAccessToken(access_token);
     spotifyApi.setRefreshToken(refresh_token);
     //Adds user to database
-    const { username, profile_img, vibe_id } = await addUser();
+    const { username, profile_img, vibe_id } = await addUser(spotifyApi);
+
     // Redirect user
     const url =
       process.env.NODE_ENV === "production"
@@ -66,19 +92,9 @@ router.get("/callback", async (req, res) => {
       profile_img: profile_img,
     });
     res.redirect(urlObj.toString());
-
-    // Refresh
-    // setInterval(async () => {
-    // 	const data = await spotifyApi.refreshAccessToken();
-    // 	const access_token = data.body['access_token'];
-
-    // 	console.log('The access token has been refreshed!');
-    // 	console.log('access_token:', access_token);
-    // 	spotifyApi.setAccessToken(access_token);
-    // }, (expires_in / 2) * 1000);
   } catch (err) {
-    if (err.type === "parse") res.redirect(home_url + "?not_enough_data=true");
-    else res.redirect(home_url);
+    console.error("Error getting Tokens:", err);
+    res.redirect(home_url + "?error=true");
   }
 });
 module.exports = router;

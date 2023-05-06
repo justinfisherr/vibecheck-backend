@@ -1,4 +1,11 @@
 const { User } = require("../models/user");
+
+/**
+ * getUsers - finds all users that match the query.
+ * Conditionals - Finds a match if the query matches the vibe_id OR the
+ * Spotify username.
+ */
+
 async function getUsers(req, res, next) {
   let users = {};
   const parse = {
@@ -18,6 +25,7 @@ async function getUsers(req, res, next) {
       },
     ],
   };
+
   try {
     users = await User.find(conditionals, parse);
     req.users = users;
