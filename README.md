@@ -2,12 +2,9 @@
 
 - [Features](#features)
 - [Usage](#how-to-use)
-- [Built With](#built-with)
+- [Built With](#technologies)
 - [Future Updates](#future-updates)
 - [Authors](#authors)
-- [Support](#support)
-
-
 
 
 ## Features:
@@ -80,8 +77,20 @@ If you delete your account, no other user will be able to check their compatibil
 - Mongoose
 - Spotify Web API
 
-## Future Plans:
+## Future Updates:
 
 - [ ]  Improve User Interface
 - [ ]  More user customizability
 - [ ]  Implement TypeScript for stability
+
+## Authors
+**Alexis Martin**
+
+- [GitHub Profile](https://github.com/webdevlex)
+- [Personal Website](https://webdevlex.com/)
+- [Email: webdeveloperlex@gmail.<area>com ✉️](mailto:webdeveloperlex@gmail.com?subject=Listening-Lobby "webdeveloperlex@gmail.com")
+___
+**Justin Fisher**
+
+- [GitHub Profile](https://github.com/justinfisherrr)
+- [Email: jf.thedeveloper@gmail.<area>com ✉️](mailto:jf.thedeveloper@gmail.com?subject=Listening-Lobby "jf.thedeveloper@gmail.com")
