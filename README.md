@@ -49,7 +49,7 @@ Once you arrive at your match story, simply click the arrow buttons to navigate 
 
 Do note:
 
-- that Alvin and my match story will be different depending on who made the request!
+- that Liz and my match story will be different depending on who made the request!
 - A user will only show in the search results if they have used the app
 
 If your friend hasn’t used Vibe Check before, send them a request by:
