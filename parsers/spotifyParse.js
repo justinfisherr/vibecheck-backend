@@ -61,17 +61,16 @@ async function getUserInfo(spotifyApi, parsedUser) {
  */
 
 async function getTopSongsNoDupes(spotifyApi) {
-  const shortTerm = await spotifyApi.getMyTopTracks({
-    limit: 50,
-    time_range: "short_term",
-  });
+  const terms = ["short_term", "long_term"];
 
-  const longTerm = await spotifyApi.getMyTopTracks({
-    limit: 50,
-    time_range: "long_term",
-  });
-  let result = shortTerm.body.items;
-  result.push(...longTerm.body.items);
+  let topTracksRequests = terms.map((term) =>
+    spotifyApi.getMyTopTracks({ limit: 50, time_range: term })
+  );
+
+  const topTrackResponse = await Promise.all(topTracksRequests);
+
+  let result = topTrackResponse[0].body.items;
+  result.push(...topTrackResponse[1].body.items);
 
   let addedSongs = new Set();
   return result.filter((song) => {
@@ -90,12 +89,19 @@ async function getTopSongsNoDupes(spotifyApi) {
  * @param {Object} parsedUser - an object that will be filled with Spotify Data
 
  */
-async function parseTopSongs(spotifyApi, parsedUser) {
+async function parseTopSongs(spotifyApi, parsedUser, allGenres) {
   const topSongs = await getTopSongsNoDupes(spotifyApi);
+  let spotifyArtistIDs_1 = "";
+  let spotifyArtistIDs_2 = "";
+  let idCounter = 0;
 
   let filteredSongs = topSongs.map((song) => {
     let filteredSong = {};
+    if (idCounter++ < 50) spotifyArtistIDs_1 += `${song.artists[0].id},`;
+    else spotifyArtistIDs_2 += `${song.artists[0].id},`;
+
     filteredSong.song_name = song.name;
+
     filteredSong.artist_name = song.artists[0].name;
     filteredSong.url = song.external_urls.spotify;
     filteredSong.preview_url = song.preview_url;
@@ -106,6 +112,23 @@ async function parseTopSongs(spotifyApi, parsedUser) {
       filteredSong.song_img = song.album.images[0].url;
     }
     return filteredSong;
+  });
+
+  spotifyArtistIDs_1 = spotifyArtistIDs_1.slice(0, -1);
+  spotifyArtistIDs_2 = spotifyArtistIDs_2.slice(0, -1);
+
+  const artistIdStrings = [spotifyArtistIDs_1, spotifyArtistIDs_2];
+  const artistRequests = artistIdStrings.map((idString) => {
+    if (idString.length > 0) return spotifyApi.getArtists([idString]);
+  });
+
+  const songArtists = await Promise.all(artistRequests);
+  filteredSongs.map((song, index) => {
+    const songIndex = index % 50;
+    const responseIndex = index <= 49 ? 0 : 1;
+
+    song.genres = songArtists[responseIndex].body.artists[songIndex].genres;
+    allGenres.push(songArtists[responseIndex].body.artists[songIndex].genres);
   });
 
   parsedUser.user_data.top_songs = filteredSongs;
@@ -122,17 +145,16 @@ async function parseTopSongs(spotifyApi, parsedUser) {
  */
 
 async function getTopArtistsNoDupes(spotifyApi) {
-  const shortTerm = await spotifyApi.getMyTopArtists({
-    limit: 50,
-    time_range: "short_term",
-  });
+  const terms = ["short_term", "long_term"];
 
-  const longTerm = await spotifyApi.getMyTopArtists({
-    limit: 50,
-    time_range: "long_term",
-  });
-  let result = shortTerm.body.items;
-  result.push(...longTerm.body.items);
+  const topArtistRequests = terms.map((term) =>
+    spotifyApi.getMyTopArtists({ limit: 50, time_range: term })
+  );
+
+  const topArtistResponse = await Promise.all(topArtistRequests);
+
+  let result = topArtistResponse[0].body.items;
+  result.push(...topArtistResponse[1].body.items);
 
   let addedArtists = new Set();
   return result.filter((artist) => {
@@ -190,9 +212,11 @@ async function spotifyParse(spotifyApi) {
   let allGenres = [];
 
   try {
-    await getUserInfo(spotifyApi, parsedUser);
-    await parseTopSongs(spotifyApi, parsedUser);
-    await parseTopArtist(spotifyApi, parsedUser, allGenres);
+    await Promise.all([
+      getUserInfo(spotifyApi, parsedUser),
+      parseTopSongs(spotifyApi, parsedUser, allGenres),
+      parseTopArtist(spotifyApi, parsedUser, allGenres),
+    ]);
     getGenres(allGenres, parsedUser);
   } catch (error) {
     console.log("Error Parsing through Spotify Object: ", error);

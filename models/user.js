@@ -49,13 +49,18 @@ async function createVibeID() {
  */
 
 userSchema.pre("save", async function (next) {
-  if (this.user_info.vibe_id == undefined) {
-    if (this.user_info.user_id.length > 15) {
-      this.user_info.vibe_id = await createVibeID();
-    } else {
-      this.user_info.vibe_id = this.user_info.user_id;
-    }
+  //If there exists a user with the vibe_id of the current user's userID
+  //usernameTaken will be truthy.
+  const usernameTaken = await mongoose.model("users", userSchema).findOne({
+    "user_info.vibe_id": this.user_info.user_id,
+  });
+  //If username is taken or their id is greater than 15, we create a new vibe_id.
+  if (usernameTaken || this.user_info.user_id.length > 15) {
+    this.user_info.vibe_id = await createVibeID();
+  } else {
+    this.user_info.vibe_id = this.user_info.user_id;
   }
+
   next();
 });
 
