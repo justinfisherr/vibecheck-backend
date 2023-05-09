@@ -1,3 +1,8 @@
+/*
+  Two routes that handle all Spotify Authorization requests and responds
+  with a working Spotify API object. 
+*/
+
 const express = require("express");
 const router = express.Router();
 const SpotifyObject = require("../objects/SpotifyObject");
@@ -27,11 +32,23 @@ const Global_Spotify_Api = SpotifyObject.getSpotifyObject({
   clientSecret: client_secret,
 });
 
+/** 
+  Endpoint /login
+  Redirects user to Spotify's Authorization page.
+*/
+
 router.get("/login", (req, res) => {
   res.redirect(
     Global_Spotify_Api.createAuthorizeURL(scopes, "authorizing", true)
   );
 });
+
+/** 
+  Endpoint /callback
+  After authorizing, this endpoint is hit automatically from Spotify.
+  If successful, The Spotify API is now accessible. 
+  If not, the end-user is redirected to the home page. 
+*/
 
 router.get("/callback", async (req, res) => {
   const error = req.query.error;

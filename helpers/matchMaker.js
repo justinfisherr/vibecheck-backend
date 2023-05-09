@@ -1,9 +1,18 @@
-//A helper function that figure out two user's match data
 const getMatches = require("../algos/getMatches");
 const getCompatibility = require("../algos/getCompatibility");
 const getTop5Items = require("../parsers/getTop5Items");
 const getTop5Genres = require("../parsers/getTop5Genres");
 const getRecommended = require("../algos/getRecommended");
+/**
+ * matchMaker - takes two Spotify User's and compares their data against
+ * eachother to create a match profile consiting of matching songs, artists
+ * genres, and recommendations.
+ *
+ * @param {object} user1 - end user's Spotify Data.
+ * @param {object} user2 - requested user's Spotify Data.
+ *
+ * @returns {object} - An object containing two user's match profile.
+ */
 
 function matchMaker(user1, user2) {
   const user1TopGenres = getTop5Genres(user1);
@@ -18,7 +27,39 @@ function matchMaker(user1, user2) {
 
   const recommendedItems = getRecommended(user1, user2, matchedGenres);
   const compatibility = getCompatibility(user1, user2);
-  const responseObject = {
+  const matchProfile = createMatchProfile(
+    user1,
+    user2,
+    user1TopGenres,
+    user2TopGenres,
+    recommendedItems,
+    matchedGenres,
+    matchedArtists,
+    matchedSongs,
+    compatibility
+  );
+  return matchProfile;
+}
+
+/**
+ * createMatchProfile - takes all the user's match data and creates a nicely
+ * formatted object for the client to read.
+ *
+ * @returns - Object of user's match data.
+ */
+
+function createMatchProfile(
+  user1,
+  user2,
+  user1TopGenres,
+  user2TopGenres,
+  recommendedItems,
+  matchedGenres,
+  matchedArtists,
+  matchedSongs,
+  compatibility
+) {
+  return {
     users: {
       user1: {
         profile_img: user1.user_info.profile_img,
@@ -48,6 +89,6 @@ function matchMaker(user1, user2) {
       match_percent: compatibility,
     },
   };
-  return responseObject;
 }
+
 module.exports = matchMaker;
