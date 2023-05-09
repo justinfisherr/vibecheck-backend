@@ -1,3 +1,7 @@
+# Vibe Check Backend
+This is the repository for https://thevibecheck.io/ backend.  
+Check out the frontend repo here: https://github.com/justinfisherrr/vibecheck-frontend
+
 ## Table of Contents
 
 - [Features](#features)
