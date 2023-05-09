@@ -34,8 +34,7 @@ This is Vibe Check’s home page!
 
 Here you can find your ID. This is customizable. Click on the edit icon to bring up our edit id module. 
 
-<img src="https://user-images.githubusercontent.com/74376317/236977644-8c872bdd-a821-4b8b-b6b9-f4948232e2a0.gif" width="80%">
-
+<img src="https://user-images.githubusercontent.com/74376317/236980645-1d42232e-f0f2-4e2d-b4e4-8a272d9f4098.gif" width="80%">
 
 Let’s check our compatibility with our friend! 
 
@@ -43,7 +42,7 @@ You can look for your friend’s username or Vibe_ID by typing it into the searc
 
 Once you find it simply click on it to view each other’s match story!
 
-<img src="https://user-images.githubusercontent.com/74376317/236977075-f4234797-0613-4be7-b560-ada2261de4d3.gif" width="80%">
+<img src="https://user-images.githubusercontent.com/74376317/236980735-2e67d599-612e-4ee8-bc57-3a7fa55c62c9.gif" width="80%">
 
 
 Once you arrive at your match story, simply click the arrow buttons to navigate through it. 
@@ -59,11 +58,11 @@ clicking Invite → copying the link → and sending it to a friend.
 
 This link will automatically start the comparison between you and the user you invited once they click it. 
 
-<img src="https://user-images.githubusercontent.com/74376317/236977097-01f428b6-251b-400f-9198-a9fa9ebd9195.gif" width="80%">
+<img src="https://user-images.githubusercontent.com/74376317/236980790-68d59456-074a-41f3-8944-7f32eeeb3c2e.gif" width="80%">
 
 Once you are done viewing your match story share it with friends by either downloading or click the share button and picking your social media!
 
-<img src="https://user-images.githubusercontent.com/74376317/236977113-14c6e20b-5e69-4095-8a3b-6f762c7fdc0b.gif" width="80%">
+<img src="https://user-images.githubusercontent.com/74376317/236980870-a44239bb-3aa1-4e88-a3ca-3eb7dfea81d9.gif" width="80%">
 
 Once you are done click on your profile picture in the top left and either Logout or Delete your account. 
 
@@ -88,13 +87,20 @@ If you delete your account, no other user will be able to check their compatibil
 - [ ]  Implement TypeScript for stability
 
 ## Authors
+
+**Justin Fisher**
+
+- [LinkedIn](https://www.linkedin.com/in/justinthedev/)
+- [GitHub Profile](https://github.com/justinfisherrr)
+- [Personal Website](https://www.justinthedev.com/)
+- [Email: justinthedev@outlook.<area>com ✉️](mailto:jf.thedeveloper@gmail.com?subject=Listening-Lobby "justinthedev@outlook.com")
+
+___
 **Alexis Martin**
 
+- [LinkedIn](https://www.linkedin.com/in/webdevlex/)
 - [GitHub Profile](https://github.com/webdevlex)
 - [Personal Website](https://webdevlex.com/)
 - [Email: webdeveloperlex@gmail.<area>com ✉️](mailto:webdeveloperlex@gmail.com?subject=Listening-Lobby "webdeveloperlex@gmail.com")
-___
-**Justin Fisher**
 
-- [GitHub Profile](https://github.com/justinfisherrr)
-- [Email: jf.thedeveloper@gmail.<area>com ✉️](mailto:jf.thedeveloper@gmail.com?subject=Listening-Lobby "jf.thedeveloper@gmail.com")
+
