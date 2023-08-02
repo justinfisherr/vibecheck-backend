@@ -13,23 +13,23 @@ const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
 
 const redirect_url =
-  process.env.NODE_ENV === "production"
-    ? "https://vibecheck-backend-production.up.railway.app"
-    : "http://localhost:5000";
+	process.env.NODE_ENV === "production"
+		? "https://vibecheck-backend.cyclic.app"
+		: "http://localhost:5000";
 
 const home_url =
-  process.env.NODE_ENV === "production"
-    ? "https://thevibecheck.io"
-    : "http://localhost:3000";
+	process.env.NODE_ENV === "production"
+		? "https://thevibecheck.io"
+		: "http://localhost:3000";
 
 const redirect_uri = `${redirect_url}/callback`;
 
 const scopes = ["user-top-read"];
 
 const Global_Spotify_Api = SpotifyObject.getSpotifyObject({
-  redirectUri: redirect_uri,
-  clientId: client_id,
-  clientSecret: client_secret,
+	redirectUri: redirect_uri,
+	clientId: client_id,
+	clientSecret: client_secret,
 });
 
 /** 
@@ -38,9 +38,9 @@ const Global_Spotify_Api = SpotifyObject.getSpotifyObject({
 */
 
 router.get("/login", (req, res) => {
-  res.redirect(
-    Global_Spotify_Api.createAuthorizeURL(scopes, "authorizing", true)
-  );
+	res.redirect(
+		Global_Spotify_Api.createAuthorizeURL(scopes, "authorizing", true)
+	);
 });
 
 /** 
@@ -51,50 +51,50 @@ router.get("/login", (req, res) => {
 */
 
 router.get("/callback", async (req, res) => {
-  const error = req.query.error;
-  const code = req.query.code;
+	const error = req.query.error;
+	const code = req.query.code;
 
-  if (error) {
-    console.error("Callback Error:", error);
-    res.redirect(home_url);
-    return;
-  }
+	if (error) {
+		console.error("Callback Error:", error);
+		res.redirect(home_url);
+		return;
+	}
 
-  try {
-    const spotifyApi = new SpotifyWebApi({
-      redirectUri: redirect_uri,
-      clientId: client_id,
-      clientSecret: client_secret,
-    });
-    const data = await spotifyApi.authorizationCodeGrant(code);
+	try {
+		const spotifyApi = new SpotifyWebApi({
+			redirectUri: redirect_uri,
+			clientId: client_id,
+			clientSecret: client_secret,
+		});
+		const data = await spotifyApi.authorizationCodeGrant(code);
 
-    const access_token = data.body["access_token"];
-    const refresh_token = data.body["refresh_token"];
-    const expires_in = data.body["expires_in"];
+		const access_token = data.body["access_token"];
+		const refresh_token = data.body["refresh_token"];
+		const expires_in = data.body["expires_in"];
 
-    spotifyApi.setAccessToken(access_token);
-    spotifyApi.setRefreshToken(refresh_token);
-    //Adds user to database
-    const { username, profile_img, vibe_id } = await addUser(spotifyApi);
+		spotifyApi.setAccessToken(access_token);
+		spotifyApi.setRefreshToken(refresh_token);
+		//Adds user to database
+		const { username, profile_img, vibe_id } = await addUser(spotifyApi);
 
-    // Redirect user
-    const url =
-      process.env.NODE_ENV === "production"
-        ? "https://thevibecheck.io/compare"
-        : "http://localhost:3000/compare";
+		// Redirect user
+		const url =
+			process.env.NODE_ENV === "production"
+				? "https://thevibecheck.io/compare"
+				: "http://localhost:3000/compare";
 
-    const urlObj = new URL(url);
-    urlObj.search = new URLSearchParams({
-      token: access_token,
-      refresh_token: refresh_token,
-      username: username,
-      vibe_id: vibe_id,
-      profile_img: profile_img,
-    });
-    res.redirect(urlObj.toString());
-  } catch (err) {
-    console.error("Error getting Tokens:", err);
-    res.redirect(home_url + "?error=true");
-  }
+		const urlObj = new URL(url);
+		urlObj.search = new URLSearchParams({
+			token: access_token,
+			refresh_token: refresh_token,
+			username: username,
+			vibe_id: vibe_id,
+			profile_img: profile_img,
+		});
+		res.redirect(urlObj.toString());
+	} catch (err) {
+		console.error("Error getting Tokens:", err);
+		res.redirect(home_url + "?error=true");
+	}
 });
 module.exports = router;
