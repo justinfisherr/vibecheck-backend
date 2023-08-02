@@ -11,7 +11,7 @@ function getRecommendedArtists(user2, matchedGenres, user1TopArtists) {
     Math.min(5, recommendedArtists.length)
   );
 
-  return recommendedArtists
+  return recommendedArtists.length
     ? recommendedArtists
     : user2TopArtists.slice(0, Math.min(5, user2TopArtists.length));
 }
