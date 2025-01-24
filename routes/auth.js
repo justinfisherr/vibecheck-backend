@@ -14,7 +14,7 @@ const client_secret = process.env.CLIENT_SECRET;
 
 const redirect_url =
 	process.env.NODE_ENV === "production"
-		? "https://vibecheck-backend.cyclic.app"
+		? "https://vibecheck-backend-production-8135.up.railway.app"
 		: "http://localhost:5000";
 
 const home_url =
